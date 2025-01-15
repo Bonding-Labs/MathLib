@@ -13,18 +13,14 @@ It imposes **range restrictions** to ensure numerical accuracy and will revert i
 ## 1. Overview
 
 - **Fixed-Point Math**: All calculations assume **1e18** scale, meaning 1 represents 1.0 in typical decimal notation.
-- **Safe Approximations**:  
-  - `log1p(x)` is approximated using the first two terms of its Taylor series expansion:  
+  - `log1p(x)` is calculated using the first two terms of its Taylor series expansion:  
     \[
       \log(1 + x) \approx x - \frac{x^2}{2}.
     \]
-  - `expWad(x)` is approximated by the first three terms of the Taylor series for \(e^x\) or \(e^{-x}\):
+  - `expWad(x)` is calculated by the first three terms of the Taylor series for \(e^x\) or \(e^{-x}\):
     \[
       e^x \approx 1 + x + \frac{x^2}{2}, \quad |x| < 1e16.
     \]
-
-- **Why Approximations?**  
-  Full, high-precision log/exp in Solidity is expensive and complex. This library trades off precision for gas efficiency and simplicity—**so long as `x` remains small**.
 
 ---
 
@@ -75,7 +71,6 @@ function expWad(int256 x) internal pure returns (uint256);
      ```solidity
      require(x > -1e16 && x < 1e16, "x out of range");
      ```
-   - Keeps the approximation accurate for small `|x|`.
 
 2. **Taylor Expansion**:  
    - For **`x >= 0`**:  
@@ -99,19 +94,12 @@ If `x = 5e15` (which is 0.005 in decimal):
 
 ---
 
-## 4. Use Cases
-
-- **Bonding Curves**: Quickly approximate log/exp calculations for smaller inputs without heavy computational cost.
-- **Financial Math**: Potentially used in interest calculations, growth rates, or other **DeFi** contexts, provided the input domain is kept small.
-- **Gas-Efficient**: By truncating to a few terms of the Taylor series, the code remains cheaper on gas versus full-blown arbitrary-precision methods.
-
----
 
 ## 5. Summary
 
 **MathLib** provides:
-- **`log1p(x)`**: Approximates \(\log(1 + x)\) for `x < 1e14`, ensuring the series expansion is valid and reverts otherwise.
-- **`expWad(x)`**: Approximates \(\exp(x)\) (or \(\exp(-x)\)) for `|x| < 1e16`, returning results in 1e18 fixed-point.
+- **`log1p(x)`**: Calculates \(\log(1 + x)\) for `x < 1e14`, ensuring the series expansion is valid and reverts otherwise.
+- **`expWad(x)`**: Calculates \(\exp(x)\) (or \(\exp(-x)\)) for `|x| < 1e16`, returning results in 1e18 fixed-point.
 
-Both functions revert for inputs outside their intended “small range” to avoid large errors. This makes **MathLib** suitable for use in **contracts that only deal with moderate log/exp** calculations, such as certain **DeFi** or token bonding curve scenarios where the values don’t exceed the specified domains.
+
 ```
