@@ -1,16 +1,12 @@
 ```md
 # MathLib Library Explanation
 
-This **Solidity library** provides **approximate** implementations of:
+This **Solidity library** provides implementations of:
 
 1. \( \log(1 + x) \) for small \( x \) (in 1e18 fixed-point).
 2. \( \exp(x / 1e18) \) for small \( x \) (in 1e18 fixed-point).
 
-It imposes **range restrictions** to ensure numerical accuracy and will revert if inputs exceed those ranges.
-
 ---
-
-## 1. Overview
 
 - **Fixed-Point Math**: All calculations assume **1e18** scale, meaning 1 represents 1.0 in typical decimal notation.
   - `log1p(x)` is calculated using the first two terms of its Taylor series expansion:  
@@ -24,13 +20,6 @@ It imposes **range restrictions** to ensure numerical accuracy and will revert i
 
 ---
 
-## 2. `log1p(uint256 x)`
-
-### Signature
-
-```solidity
-function log1p(uint256 x) internal pure returns (uint256);
-```
 
 ### Logic
 
@@ -39,7 +28,7 @@ function log1p(uint256 x) internal pure returns (uint256);
      ```solidity
      require(x < 1e14, "x too large for log");
      ```
-   - This ensures the approximation is valid for small \(x\).
+
 
 2. **Taylor Expansion**:  
    \[
